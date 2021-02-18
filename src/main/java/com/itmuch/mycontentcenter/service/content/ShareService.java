@@ -28,7 +28,7 @@ public class ShareService {
     public static void main(String[] args) {
         RestTemplate restTemplate = new RestTemplate();
         // 用HTTP GET方法去请求，并返回一个对象
-        String forObject = restTemplate.getForObject("http://localhost:8081/users/1", String.class);
+        String forObject = restTemplate.getForObject("http://localhost:8081/users/{id}", String.class,1);
         System.out.println(forObject);
     }
 
