@@ -1,2 +1,9 @@
 # Project exclude paths
 /target/
+.idea/
+*.iml
+
+#eclipse
+.project
+.classpath
+.settings/
