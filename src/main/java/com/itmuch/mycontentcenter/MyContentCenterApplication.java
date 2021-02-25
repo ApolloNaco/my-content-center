@@ -2,6 +2,7 @@ package com.itmuch.mycontentcenter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import tk.mybatis.spring.annotation.MapperScan;
@@ -18,6 +19,7 @@ public class MyContentCenterApplication {
     // 在Spring容器中，创建一个对象，类型RestTemple 名称restTemplate
     // <bean id="restTemplate(方法名) class = RestTemplate 返回类型的全路径">
     @Bean
+    @LoadBalanced
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
