@@ -1,18 +1,19 @@
 package ribbonconfiguration;
 
 
-import com.netflix.loadbalancer.IPing;
+import com.itmuch.mycontentcenter.configuration.NacosWeightedRule;
 import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.PingUrl;
-import com.netflix.loadbalancer.RandomRule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author cgy
+ */
 @Configuration
 public class RibbonConfiguration {
     @Bean
     public IRule ribbonRole(){
-        return new RandomRule();
+        return new NacosWeightedRule();
     }
 
 //    @Bean
