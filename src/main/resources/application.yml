@@ -25,3 +25,7 @@ server:
 #my-user-center:
 #  ribbon:
 #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+ribbon:
+  eager-load:
+    enabled: true
+    clients: my-user-center
