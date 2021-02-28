@@ -1,6 +1,7 @@
 package ribbonconfiguration;
 
 
+import com.itmuch.mycontentcenter.configuration.NacosSameClusterWeightedRule;
 import com.itmuch.mycontentcenter.configuration.NacosWeightedRule;
 import com.netflix.loadbalancer.IRule;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class RibbonConfiguration {
     @Bean
     public IRule ribbonRole(){
-        return new NacosWeightedRule();
+        return new NacosSameClusterWeightedRule();
     }
 
 //    @Bean

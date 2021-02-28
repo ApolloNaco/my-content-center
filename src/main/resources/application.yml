@@ -13,6 +13,7 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+        cluster-name: BJ
 
   #        service: 优先读取这里的服务名 而不是 spring.application.name
   application:
