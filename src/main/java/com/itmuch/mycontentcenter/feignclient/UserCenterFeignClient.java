@@ -1,11 +1,12 @@
 package com.itmuch.mycontentcenter.feignclient;
 
+import com.itmuch.mycontentcenter.configuration.UserCenterFeignConfiguration;
 import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "my-user-center")
+@FeignClient(name = "my-user-center", configuration = UserCenterFeignConfiguration.class)
 public interface UserCenterFeignClient {
 
     /**

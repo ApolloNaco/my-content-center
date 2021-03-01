@@ -30,3 +30,7 @@ ribbon:
   eager-load:
     enabled: true
     clients: my-user-center
+
+logging:
+  level:
+    com.itmuch.mycontentcenter.feignclient.UserCenterFeignClient: debug
