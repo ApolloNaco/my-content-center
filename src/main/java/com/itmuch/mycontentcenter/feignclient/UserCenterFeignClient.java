@@ -6,7 +6,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "my-user-center", configuration = UserCenterFeignConfiguration.class)
+//@FeignClient(name = "my-user-center", configuration = UserCenterFeignConfiguration.class)
+@FeignClient(name = "my-user-center")
 public interface UserCenterFeignClient {
 
     /**
