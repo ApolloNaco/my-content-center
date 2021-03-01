@@ -12,7 +12,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 // 扫描mybatis哪些包里面的接口
 @MapperScan("com.itmuch.mycontentcenter.dao")
 @SpringBootApplication
-@EnableFeignClients(defaultConfiguration = GlobalFeignConfiguration.class)
+@EnableFeignClients //(defaultConfiguration = GlobalFeignConfiguration.class)
 public class MyContentCenterApplication {
 
     public static void main(String[] args) {
