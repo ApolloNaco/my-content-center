@@ -1,7 +1,9 @@
 package com.itmuch.mycontentcenter;
 
 import com.itmuch.mycontentcenter.dao.content.ShareMapper;
+import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
+import com.itmuch.mycontentcenter.feignclient.TestUserCenterFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -18,6 +20,8 @@ public class TestController {
 
     @Autowired
     private DiscoveryClient discoveryClient;
+
+
 
     @GetMapping("/test")
     public List<Share> testInsert(){
@@ -46,5 +50,13 @@ public class TestController {
         // 查询指定服务的所有实例的信息
         // consul/eureka/zookeeper...
         return this.discoveryClient.getInstances("my-user-center");
+    }
+
+    @Autowired
+    private TestUserCenterFeignClient testUserCenterFeignClient;
+
+    @GetMapping("test-get")
+    public UserDTO query(UserDTO userDTO) {
+        return testUserCenterFeignClient.query(userDTO);
     }
 }

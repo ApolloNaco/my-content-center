@@ -1,6 +1,7 @@
 package com.itmuch.mycontentcenter.configuration;
 
 import feign.Logger;
+import feign.Retryer;
 import org.springframework.context.annotation.Bean;
 
 /**
