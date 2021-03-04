@@ -3,6 +3,7 @@ package com.itmuch.mycontentcenter;
 import com.itmuch.mycontentcenter.dao.content.ShareMapper;
 import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
+import com.itmuch.mycontentcenter.feignclient.TestBaiduFeignClient;
 import com.itmuch.mycontentcenter.feignclient.TestUserCenterFeignClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -58,5 +59,13 @@ public class TestController {
     @GetMapping("test-get")
     public UserDTO query(UserDTO userDTO) {
         return testUserCenterFeignClient.query(userDTO);
+    }
+
+    @Autowired
+    private TestBaiduFeignClient testBaiduFeignClient;
+
+    @GetMapping("baidu")
+    public String baiduIndex() {
+        return this.testBaiduFeignClient.index();
     }
 }
