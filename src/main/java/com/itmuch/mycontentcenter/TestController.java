@@ -160,4 +160,40 @@ public class TestController {
         }
     }
 
+    @GetMapping("/test-sentinel-resource")
+    // 默认会Trace Throwable异常 所以IllegalArgumentException不用Tracer
+    @SentinelResource(
+            value = "test-sentinel-api",
+            blockHandler = "block",
+            fallback = "fallback"
+    )
+    public String testSentinelResource(@RequestParam(required = false) String a) {
+        if (StringUtils.isBlank(a)) {
+            throw new IllegalArgumentException("a cannot be blank.");
+        }
+        return a;
+    }
+
+    /**
+     * 处理限流(没有降级方法fallback = "fallback"的时候降级也会走这个方法)
+     * @param a
+     * @param e
+     * @return
+     */
+    public String block(String a, BlockException e){
+        log.warn("限流，或者降级了 block", e);
+        return "限流，或者降级了 block";
+    }
+
+    /**
+     * 处理降级
+     * @param a
+     * @param e
+     * @return
+     */
+    public String fallback(String a, Throwable e){
+        log.warn("限流，或者降级了 fallback", e);
+        return "限流，或者降级了 fallback";
+    }
+
 }
