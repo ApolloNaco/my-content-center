@@ -15,6 +15,7 @@ import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
 import com.itmuch.mycontentcenter.feignclient.TestBaiduFeignClient;
 import com.itmuch.mycontentcenter.feignclient.TestUserCenterFeignClient;
+import com.itmuch.mycontentcenter.sentineltest.TestControllerBlockHandlerClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -165,6 +166,7 @@ public class TestController {
     @SentinelResource(
             value = "test-sentinel-api",
             blockHandler = "block",
+            blockHandlerClass = TestControllerBlockHandlerClass.class,
             fallback = "fallback"
     )
     public String testSentinelResource(@RequestParam(required = false) String a) {
@@ -172,17 +174,6 @@ public class TestController {
             throw new IllegalArgumentException("a cannot be blank.");
         }
         return a;
-    }
-
-    /**
-     * 处理限流(没有降级方法fallback = "fallback"的时候降级也会走这个方法)
-     * @param a
-     * @param e
-     * @return
-     */
-    public String block(String a, BlockException e){
-        log.warn("限流，或者降级了 block", e);
-        return "限流，或者降级了 block";
     }
 
     /**
