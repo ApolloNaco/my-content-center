@@ -21,8 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -185,6 +187,16 @@ public class TestController {
     public String fallback(String a, Throwable e){
         log.warn("限流，或者降级了 fallback", e);
         return "限流，或者降级了 fallback";
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/test-rest-template-sentinel/{userId}")
+    public UserDTO test(@PathVariable Integer userId) {
+        return this.restTemplate
+                .getForObject("http://my-user-center/users/{userId}",
+                        UserDTO.class, userId);
     }
 
 }

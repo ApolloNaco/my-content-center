@@ -1,5 +1,6 @@
 package com.itmuch.mycontentcenter;
 
+import com.alibaba.cloud.sentinel.annotation.SentinelRestTemplate;
 import com.itmuch.mycontentcenter.configuration.GlobalFeignConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,7 @@ public class MyContentCenterApplication {
     // <bean id="restTemplate(方法名) class = RestTemplate 返回类型的全路径">
     @Bean
     @LoadBalanced
+    @SentinelRestTemplate
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
