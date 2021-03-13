@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface UserCenterFeignClient {
 
     /**
-     * http://user-center/users/{id}
+     * http://my-user-center/users/{id}
      *
      * @param id
      * @return
