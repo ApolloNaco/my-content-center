@@ -5,12 +5,14 @@ import com.alibaba.fastjson.JSON;
 import com.itmuch.mycontentcenter.dao.content.ShareMapper;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareAuditDTO;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareDTO;
+import com.itmuch.mycontentcenter.domain.dto.messaging.UserAddBonusMsgDTO;
 import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
 import com.itmuch.mycontentcenter.domain.enums.AuditStatusEnum;
 import com.itmuch.mycontentcenter.feignclient.UserCenterFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -32,6 +34,7 @@ public class ShareService {
     private final ShareMapper shareMapper;
 
     private final UserCenterFeignClient userCenterFeignClient;
+    private final RocketMQTemplate rocketMQTemplate;
 
 
     public ShareDTO findById(Integer id) {
@@ -78,28 +81,11 @@ public class ShareService {
         this.shareMapper.updateByPrimaryKey(share);
 
         // 3. 如果是PASS，那么发送消息给rocketmq，让用户中心去消费，并为发布人添加积分
-        if (AuditStatusEnum.PASS.equals(auditDTO.getAuditStatusEnum())) {
-            // 发送半消息。。
-            String transactionId = UUID.randomUUID().toString();
-
-//            this.source.output()
-//                    .send(
-//                            MessageBuilder
-//                                    .withPayload(
-//                                            UserAddBonusMsgDTO.builder()
-//                                                    .userId(share.getUserId())
-//                                                    .bonus(50)
-//                                                    .build()
-//                                    )
-//                                    // header也有妙用...
-//                                    .setHeader(RocketMQHeaders.TRANSACTION_ID, transactionId)
-//                                    .setHeader("share_id", id)
-//                                    .setHeader("dto", JSON.toJSONString(auditDTO))
-//                                    .build()
-//                    );
-//        } else {
-//            this.auditByIdInDB(id, auditDTO);
-        }
+       this.rocketMQTemplate.convertAndSend("add-bonus",
+               UserAddBonusMsgDTO.builder()
+                       .userId(share.getUserId())
+                       .bonus(50)
+                       .build());
         return share;
     }
 }
