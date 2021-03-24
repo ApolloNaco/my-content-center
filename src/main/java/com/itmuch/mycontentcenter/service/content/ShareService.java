@@ -1,31 +1,30 @@
 package com.itmuch.mycontentcenter.service.content;
 
 
-import com.alibaba.fastjson.JSON;
 import com.itmuch.mycontentcenter.dao.content.ShareMapper;
+import com.itmuch.mycontentcenter.dao.messaging.RocketmqTransactionLogMapper;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareAuditDTO;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareDTO;
 import com.itmuch.mycontentcenter.domain.dto.messaging.UserAddBonusMsgDTO;
 import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
+import com.itmuch.mycontentcenter.domain.entity.messaging.RocketmqTransactionLog;
 import com.itmuch.mycontentcenter.domain.enums.AuditStatusEnum;
 import com.itmuch.mycontentcenter.feignclient.UserCenterFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.apache.rocketmq.spring.support.RocketMQHeaders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,6 +34,7 @@ public class ShareService {
 
     private final UserCenterFeignClient userCenterFeignClient;
     private final RocketMQTemplate rocketMQTemplate;
+    private final RocketmqTransactionLogMapper rocketmqTransactionLogMapper;
 
 
     public ShareDTO findById(Integer id) {
@@ -76,17 +76,56 @@ public class ShareService {
             throw new IllegalArgumentException("参数非法！该分享已审核通过或审核不通过！");
         }
 
-        // 2. 审核资源，将状态设为PASS/REJECT
-        share.setAuditStatus(auditDTO.getAuditStatusEnum().toString());
-        this.shareMapper.updateByPrimaryKey(share);
-
         // 3. 如果是PASS，那么发送消息给rocketmq，让用户中心去消费，并为发布人添加积分
-       this.rocketMQTemplate.convertAndSend("add-bonus",
-               UserAddBonusMsgDTO.builder()
-                       .userId(share.getUserId())
-                       .bonus(50)
-                       .build());
+        if (AuditStatusEnum.PASS.equals(auditDTO.getAuditStatusEnum())) {
+            // 发送半消息。。
+            String transactionId = UUID.randomUUID().toString();
+            this.rocketMQTemplate.sendMessageInTransaction(
+                    "tx-add-bonus-group",
+                    "add-bonus",
+                    MessageBuilder
+                            .withPayload(
+                                    UserAddBonusMsgDTO.builder()
+                                            .userId(share.getUserId())
+                                            .bonus(50)
+                                            .build()
+                            )
+                            // header也有妙用...
+                            .setHeader(RocketMQHeaders.TRANSACTION_ID, transactionId)
+                            .setHeader("share_id", id)
+                            .build(),
+                    // arg有大用处
+                    auditDTO
+            );
+        } else {
+            this.auditByIdInDB(id, auditDTO);
+        }
+
         return share;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void auditByIdInDB(Integer id, ShareAuditDTO auditDTO) {
+        Share share = Share.builder()
+                .id(id)
+                .auditStatus(auditDTO.getAuditStatusEnum().toString())
+                .reason(auditDTO.getReason())
+                .build();
+        this.shareMapper.updateByPrimaryKeySelective(share);
+
+        // 4. 把share写到缓存
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void auditByIdWithRocketMqLog(Integer id, ShareAuditDTO auditDTO, String transactionId) {
+        this.auditByIdInDB(id, auditDTO);
+
+        this.rocketmqTransactionLogMapper.insertSelective(
+                RocketmqTransactionLog.builder()
+                        .transactionId(transactionId)
+                        .log("审核分享...")
+                        .build()
+        );
     }
 }
 

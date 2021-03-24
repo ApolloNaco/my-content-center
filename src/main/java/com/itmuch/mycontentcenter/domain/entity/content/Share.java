@@ -2,13 +2,13 @@ package com.itmuch.mycontentcenter.domain.entity.content;
 
 import java.util.Date;
 import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
+import lombok.*;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
 @Table(name = "share")
 public class Share {
     /**
