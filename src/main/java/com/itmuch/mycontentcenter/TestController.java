@@ -15,6 +15,7 @@ import com.itmuch.mycontentcenter.domain.dto.user.UserDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
 import com.itmuch.mycontentcenter.feignclient.TestBaiduFeignClient;
 import com.itmuch.mycontentcenter.feignclient.TestUserCenterFeignClient;
+import com.itmuch.mycontentcenter.rocketmq.MySource;
 import com.itmuch.mycontentcenter.sentineltest.TestControllerBlockHandlerClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,6 +208,20 @@ public class TestController {
     @GetMapping("/test-stream")
     public String testStream(){
         this.source.output()
+                .send(
+                        MessageBuilder
+                                .withPayload("消息体")
+                                .build()
+                );
+        return "success";
+    }
+
+    @Autowired
+    private MySource mySource;
+
+    @GetMapping("/test-stream-2")
+    public String testStream2(){
+        this.mySource.output()
                 .send(
                         MessageBuilder
                                 .withPayload("消息体")
