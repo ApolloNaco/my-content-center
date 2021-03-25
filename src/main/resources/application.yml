@@ -22,6 +22,14 @@ spring:
         # 指定sentinel 控制台的地址
         dashboard: localhost:8080
       web-context-unify: false
+    stream:
+      rocketmq:
+        binder:
+          name-server: 127.0.0.1:9876
+      bindings:
+        output:
+          # 用来指定topic
+          destination: stream-test-topic
 
 
   #        service: 优先读取这里的服务名 而不是 spring.application.name
