@@ -1,5 +1,6 @@
 package com.itmuch.mycontentcenter.rocketmq;
 
+import com.alibaba.fastjson.JSON;
 import com.itmuch.mycontentcenter.dao.messaging.RocketmqTransactionLogMapper;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareAuditDTO;
 import com.itmuch.mycontentcenter.domain.entity.messaging.RocketmqTransactionLog;
@@ -25,9 +26,11 @@ public class AddBonusTransactionListener implements RocketMQLocalTransactionList
 
         String transactionId = (String) headers.get(RocketMQHeaders.TRANSACTION_ID);
         Integer shareId = Integer.valueOf((String) headers.get("share_id"));
-
+        //有个小坑..
+        String dtoString = (String) headers.get("dto");
+        ShareAuditDTO shareAuditDTO = JSON.parseObject(dtoString, ShareAuditDTO.class);
         try {
-            this.shareService.auditByIdWithRocketMqLog(shareId, (ShareAuditDTO) arg, transactionId);
+            this.shareService.auditByIdWithRocketMqLog(shareId, shareAuditDTO, transactionId);
             return RocketMQLocalTransactionState.COMMIT;
         } catch (Exception e) {
             return RocketMQLocalTransactionState.ROLLBACK;
