@@ -39,7 +39,7 @@ public class ShareService {
     private final Source source;
 
 
-    public ShareDTO findById(Integer id) {
+    public ShareDTO findById(Integer id, String token) {
         // 获取分享详情
         Share share = this.shareMapper.selectByPrimaryKey(id);
         // 发布人id
@@ -49,7 +49,7 @@ public class ShareService {
         // 2. 复杂的url难以维护：https://user-center/s?ie={ie}&f={f}&rsv_bp=1&rsv_idx=1&tn=baidu&wd=a&rsv_pq=c86459bd002cfbaa&rsv_t=edb19hb%2BvO%2BTySu8dtmbl%2F9dCK%2FIgdyUX%2BxuFYuE0G08aHH5FkeP3n3BXxw&rqlang=cn&rsv_enter=1&rsv_sug3=1&rsv_sug2=0&inputT=611&rsv_sug4=611
         // 3. 难以相应需求的变化，变化很没有幸福感
         // 4. 编程体验不统一
-        UserDTO userDTO = this.userCenterFeignClient.findById(userId);
+        UserDTO userDTO = this.userCenterFeignClient.findById(userId, token);
 
         // 消息的装配
         ShareDTO shareDTO = new ShareDTO();
