@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import tk.mybatis.spring.annotation.MapperScan;
 
+import java.util.Collections;
+
 // 扫描mybatis哪些包里面的接口
 @MapperScan("com.itmuch.mycontentcenter.dao")
 @SpringBootApplication
@@ -28,7 +30,13 @@ public class MyContentCenterApplication {
     @LoadBalanced
     @SentinelRestTemplate
     public RestTemplate restTemplate(){
-        return new RestTemplate();
+        RestTemplate template = new RestTemplate();
+        template.setInterceptors(
+                Collections.singletonList(
+                        new TestRestTemplateTokenRelayInterceptor()
+                )
+        );
+        return template;
     }
 
 }
