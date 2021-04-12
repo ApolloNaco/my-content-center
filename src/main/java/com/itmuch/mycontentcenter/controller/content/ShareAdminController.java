@@ -1,5 +1,6 @@
 package com.itmuch.mycontentcenter.controller.content;
 
+import com.itmuch.mycontentcenter.auth.CheckAuthorization;
 import com.itmuch.mycontentcenter.domain.dto.content.ShareAuditDTO;
 import com.itmuch.mycontentcenter.domain.entity.content.Share;
 import com.itmuch.mycontentcenter.service.content.ShareService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class ShareAdminController {
     private final ShareService shareService;
     @PutMapping("/audit/{id}")
+    @CheckAuthorization("admin")
     public Share auditById(@PathVariable Integer id, @RequestBody ShareAuditDTO auditDTO) {
         // TODO 认证、授权
         return this.shareService.auditById(id, auditDTO);
