@@ -18,6 +18,7 @@ import com.itmuch.mycontentcenter.feignclient.TestUserCenterFeignClient;
 import com.itmuch.mycontentcenter.sentineltest.TestControllerBlockHandlerClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.stream.messaging.Source;
@@ -234,6 +235,14 @@ public class TestController {
                                 .build()
                 );
         return "success";
+    }
+
+    @Value("${your.configuration}")
+    private String yourConfiguration;
+
+    @GetMapping("/test-config")
+    public String testConfiguration(){
+        return this.yourConfiguration;
     }
 
 }
